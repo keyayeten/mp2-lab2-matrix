@@ -1,10 +1,4 @@
-﻿// ННГУ, ВМК, Курс "Методы программирования-2", С++, ООП
-//
-// utmatrix.h - Copyright (c) Гергель В.П. 07.05.2001
-//   Переработано для Microsoft Visual Studio 2008 Сысоевым А.В. (21.04.2015)
-//
-// Верхнетреугольная матрица - реализация на основе шаблона вектора
-
+﻿
 #ifndef __TMATRIX_H__
 #define __TMATRIX_H__
 
@@ -62,14 +56,11 @@ public:
 template <class ValType>
 TVector<ValType>::TVector(int s, int si)
 {
-	if ((s > MAX_VECTOR_SIZE) || (si < 0) || (s<0))
-		throw 1;
-	Size = s;
-	StartIndex = si;
+	if (s > MAX_VECTOR_SIZE || si < 0 || s < 0 || si >= MAX_VECTOR_SIZE)
+		throw "size or startIndex out of range";
 	pVector = new ValType[Size];
-	for (int i = 0; i < Size; i++) {
+	for (int i = 0; i < Size; i++)
 		pVector[i] = 0;
-	}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> //конструктор копирования
@@ -106,12 +97,21 @@ ValType& TVector<ValType>::operator[](int pos)
 template <class ValType> // сравнение
 bool TVector<ValType>::operator==(const TVector &v) const
 {
-	if (Size != v.Size)
-		return 0;
-	for (int i = StartIndex; i < Size; i++)
-		if (pVector[i] != v.pVector[i])
-			return 0;
-	return 1;
+	if ((this->Size == v.Size) && (this->StartIndex == v.StartIndex))
+	{
+		for (int i = 0; i < Size; i++)
+		{
+			if (this->pVector[i] != v.pVector[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
@@ -150,7 +150,7 @@ TVector<ValType> TVector<ValType>::operator-(const ValType &val)
 {
 	TVector<ValType> res(*this);
 	for (int i = 0; i < Size; i++) {
-		res.pVector[i] -= val;
+		res.pVector[i] = res.pVector[i] + ((-1)*val);
 	}
 	return res;
 } /*-------------------------------------------------------------------------*/
@@ -168,42 +168,108 @@ TVector<ValType> TVector<ValType>::operator*(const ValType &val)
 template <class ValType> // сложение
 TVector<ValType> TVector<ValType>::operator+(const TVector<ValType> &v)
 {
-	if ((Size != v.Size) || (StartIndex != v.StartIndex))
-		throw 1;
-	TVector<ValType> res(*this);
-	for (int i = 0; i < Size; i++)
+	if ((this->Size + this->StartIndex) != (v.Size + v.StartIndex))
+		throw "It is impossible to add vectors of different lengths";
+
+	TVector<ValType> result(std::max(this->Size, v.Size), std::min(this->StartIndex, v.StartIndex));
+
+	if (this->Size < result.Size)
 	{
-		res.pVector[i] += v.pVector[i];
+		unsigned int diff = v.StartIndex - this->StartIndex;
+
+		for (int i = 0; i < diff; i++)
+		{
+			result.pVector[i] = v.pVector[i];
+		}
+
+		for (int i = 0; i < Size; i++)
+		{
+			result.pVector[i + diff] = v.pVector[i + diff] + pVector[i];
+		}
 	}
-	return res;
+	else
+	{
+		unsigned int diff = this->StartIndex - v.StartIndex;
+
+		for (int i = 0; i < diff; i++)
+		{
+			result.pVector[i] = pVector[i];
+		}
+
+		for (int i = 0; i < Size; i++)
+		{
+			result.pVector[i + diff] = pVector[i + diff] + v.pVector[i];
+		}
+	}
+	return result;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычитание
 TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 {
-	if ((Size != v.Size) || (StartIndex != v.StartIndex))
-		throw 1;
-	TVector<ValType> res(*this);
-	for (int i = 0; i < Size; i++)
+	if ((this->Size + this->StartIndex) != (v.Size + v.StartIndex))
+		throw "It is impossible to subtract vectors of different lengths";
+
+	TVector<ValType> result(std::max(this->Size, v.Size), std::min(this->StartIndex, v.StartIndex));
+
+	if (this->Size < result.Size)
 	{
-		res.pVector[i] -= v.pVector[i];
+		unsigned int diff = v.StartIndex - this->StartIndex;
+
+		for (int i = 0; i < diff; i++)
+		{
+			result.pVector[i] = v.pVector[i] * (-1);
+		}
+
+		for (int i = 0; i < Size; i++)
+		{
+			result.pVector[i + diff] = pVector[i] - v.pVector[i + diff];
+		}
 	}
-	return res;
+	else
+	{
+		unsigned int diff = this->StartIndex - v.StartIndex;
+
+		for (int i = 0; i < diff; i++)
+		{
+			result.pVector[i] = pVector[i];
+		}
+
+		for (int i = 0; i < Size; i++)
+		{
+			result.pVector[i + diff] = pVector[i + diff] - v.pVector[i];
+		}
+	}
+	return result;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // скалярное произведение
 ValType TVector<ValType>::operator*(const TVector<ValType> &v)
 {
-	if ((Size != v.Size) || (StartIndex != v.StartIndex))
-		throw 1;
+	if ((this->Size + this->StartIndex) != (v.Size + v.StartIndex))
+		throw "It is impossible to multiply vectors of different lengths";
 
-	ValType sum = 0;
-	TVector<ValType> res(*this);
-	for (int i = 0; i < Size; i++) {
-		res.pVector[i] *= v.pVector[i];
-		sum += res.pVector[i];
+	ValType result;
+
+	if (this->Size < result.Size)
+	{
+		unsigned int diff = v.StartIndex - this->StartIndex;
+
+		for (int i = 0; i < Size; i++)
+		{
+			result = result + (pVector[i] * v.pVector[i + diff]);
+		}
 	}
-	return sum;
+	else
+	{
+		unsigned int diff = this->StartIndex - v.StartIndex;
+
+		for (int i = 0; i < Size; i++)
+		{
+			result = result + (pVector[i + diff] * v.pVector[i]);
+		}
+	}
+	return result;
 } /*-------------------------------------------------------------------------*/
 
 

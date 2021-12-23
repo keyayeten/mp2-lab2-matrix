@@ -149,3 +149,28 @@ TEST(TMatrix, cant_subtract_matrixes_with_not_equal_size)
 	TMatrix <int> a(5), b(4);
 	ASSERT_ANY_THROW(a - b);
 }
+
+TEST(TMatrix, can_subtract_three_matrix_with_equal_size_1)
+{
+	int s = 7;
+	TMatrix<int>m1(s), m2(s), m3(s), ans(s), expans(s);
+	for (int i = 0; i < s; i++)
+		for (int j = i; j < s; j++)
+		{
+			m1[i][j] = 6 * i * j;
+			m2[i][j] = 2 * i * j;
+			m3[i][j] = 3 * i * j;
+			expans[i][j] = i * j;
+		}
+	ans = m1 - m2 - m3;
+	EXPECT_EQ(ans, expans);
+}
+
+TEST(TMatrix, check_commutation_of_add) {
+	TMatrix<int> A(3);
+	TMatrix<int> B(3);
+	TMatrix<int> C(3);
+	C = A + B;
+
+	EXPECT_EQ(C, B + A);
+}
