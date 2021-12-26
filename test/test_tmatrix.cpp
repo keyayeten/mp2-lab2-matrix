@@ -174,3 +174,19 @@ TEST(TMatrix, check_commutation_of_add) {
 
 	EXPECT_EQ(C, B + A);
 }
+TEST(TVector, operator_not_equal_return_false_with_equal_vectors_MY_TEST)
+{
+	int s = 6;
+	TVector<int> v1(s), v2(s);
+	for (int i = 0; i < s; i++)
+		v1[i] = v2[i] = i + 1;
+	EXPECT_FALSE(v1 != v2);
+}
+
+TEST(TMatrix, compare_after_set_element) {
+	TMatrix<int> A(3);
+	TMatrix<int> B(A);
+	A[1][1] = 666;
+
+	EXPECT_NE(A, B);
+}

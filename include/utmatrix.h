@@ -54,9 +54,9 @@ public:
 };
 
 template <class ValType>
-TVector<ValType>::TVector(int s, int si)
+TVector<ValType>::TVector(int s, int si) : Size(s), StartIndex(si)
 {
-	if (s > MAX_VECTOR_SIZE || si < 0 || s < 0 || si >= MAX_VECTOR_SIZE)
+	if (Size > MAX_VECTOR_SIZE || Size < 0 || StartIndex < 0 || StartIndex >= MAX_VECTOR_SIZE)
 		throw "size or startIndex out of range";
 	pVector = new ValType[Size];
 	for (int i = 0; i < Size; i++)
@@ -320,17 +320,7 @@ TMatrix<ValType>::TMatrix(const TMatrix<ValType> &mt) :
 }
 
 template <class ValType> // конструктор преобразования типа
-TMatrix<ValType>::TMatrix(const TVector<TVector<ValType> > &mt) :
-	TVector<TVector<ValType> >(mt) {
-	if (pVector[0].GetSize() != GetSize())
-		throw 1;
-
-	for (int i = 0; i < GetSize(); i++)
-	{
-		if (pVector[i].GetStartIndex() != i || ((pVector[i].GetSize() + pVector[i].GetStartIndex()) != GetSize()))
-			throw 1;
-	}
-}
+TMatrix<ValType>::TMatrix(const TVector<TVector<ValType> >& mt) :
 
 template <class ValType> // сравнение
 bool TMatrix<ValType>::operator==(const TMatrix<ValType> &mt) const

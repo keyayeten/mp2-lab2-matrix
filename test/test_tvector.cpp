@@ -206,3 +206,18 @@ TEST(TVector, cant_multiply_vectors_with_not_equal_size)
 	TVector <int> a(5), b(4);
 	ASSERT_ANY_THROW(a * b);
 }
+
+TEST(TVector, can_add_three_vectors) {
+	TVector <int> v1(4);
+	TVector <int> v2(4);
+	TVector <int> v3(4);
+
+	ASSERT_NO_THROW(v1 + v2 + v3);
+}
+
+TEST(TVector, check_commutability_of_scalar_multiply) {
+	TVector<int> v1(3);
+	TVector<int> v2(3);
+
+	EXPECT_EQ(v1 * v2, v2 * v1);
+}
