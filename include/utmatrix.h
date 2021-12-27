@@ -82,7 +82,7 @@ template <class ValType> // доступ
 ValType& TVector<ValType>::operator[](int pos)
 {
 	if ((pos < 0) || (pos >= StartIndex + Size)) {
-		throw 1;
+		throw "Going beyond the bounds of the array";
 	}
 	ValType null = 0;
 	if (pos < StartIndex) {
@@ -244,7 +244,7 @@ TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // скалярное произведение
-ValType TVector<ValType>::operator*(const TVector<ValType> &v)
+ValType TVector<ValType>::operator*(const TVector<ValType>& v)
 {
 	if ((this->Size + this->StartIndex) != (v.Size + v.StartIndex))
 		throw "It is impossible to multiply vectors of different lengths";
@@ -306,7 +306,7 @@ template <class ValType>
 TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType> >(s)
 {
 	if (s > MAX_MATRIX_SIZE)
-		throw 1;
+		throw "Out of bounds when creating a vector";
 	for (int i = 0; i < s; i++) {
 		TVector<ValType> aux(s - i, i);
 		pVector[i] = aux;
@@ -325,25 +325,13 @@ TMatrix<ValType>::TMatrix(const TVector<TVector<ValType> >& mt) :
 template <class ValType> // сравнение
 bool TMatrix<ValType>::operator==(const TMatrix<ValType> &mt) const
 {
-	if (Size != mt.Size)
-		return 0;
-	for (int i = 0; i < Size; i++) {
-		if (pVector[i] != mt.pVector[i])
-			return 0;
-	}
-	return 1;
+	return TVector< TVector<ValType> >::operator==(mt);
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
 bool TMatrix<ValType>::operator!=(const TMatrix<ValType> &mt) const
 {
-	if (Size != mt.Size)
-		return 1;
-	for (int i = 0; i < Size; i++) {
-		if (pVector[i] != mt.pVector[i])
-			return 1;
-	}
-	return 0;
+	return !(*this == mt);
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // присваивание
