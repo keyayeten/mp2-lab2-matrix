@@ -329,48 +329,27 @@ bool TMatrix<ValType>::operator==(const TMatrix<ValType> &mt) const
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
-bool TMatrix<ValType>::operator!=(const TMatrix<ValType> &mt) const
+bool TMatrix<ValType>::operator!=(const TMatrix<ValType>& mt) const
 {
-	return !(*this == mt);
+	return (!(TVector<TVector<ValType> >:: operator==(mt)));
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // присваивание
-TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType> &mt)
+TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType>& mt)
 {
-	if (&mt == this)
-		return *this;
-	delete[] pVector;
-	pVector = new TVector<ValType>[mt.Size];
-	Size = mt.Size;
-	for (int i = 0; i < mt.Size; i++) {
-		pVector[i] = mt.pVector[i];
-
-	}
-	return *this;
+	return(TMatrix<ValType>(TVector<TVector<ValType>>:: operator=(mt)));
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сложение
-TMatrix<ValType> TMatrix<ValType>::operator+(const TMatrix<ValType> &mt)
+TMatrix<ValType> TMatrix<ValType>::operator+(const TMatrix<ValType>& mt)
 {
-	if (Size != mt.Size)
-		throw 1;
-	TMatrix<ValType> res(*this);
-	for (int i = 0; i < Size; i++) {
-		res.pVector[i] = res.pVector[i] + mt.pVector[i];
-	}
-	return res;
+	return(TVector<TVector<ValType>>:: operator+(mt));
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычитание
-TMatrix<ValType> TMatrix<ValType>::operator-(const TMatrix<ValType> &mt)
+TMatrix<ValType> TMatrix<ValType>::operator-(const TMatrix<ValType>& mt)
 {
-	if (Size != mt.Size)
-		throw 1;
-	TMatrix<ValType> res(*this);
-	for (int i = 0; i < Size; i++) {
-		res.pVector[i] = res.pVector[i] - mt.pVector[i];
-	}
-	return res;
+	return(TVector<TVector<ValType>>:: operator-(mt));
 } /*-------------------------------------------------------------------------*/
 
   // TVector О3 Л2 П4 С6
